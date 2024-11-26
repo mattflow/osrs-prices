@@ -5,7 +5,10 @@ description = "Add your description here"
 authors = [
     { name = "Matt Flowers", email = "mattmflowers28@gmail.com" }
 ]
-dependencies = []
+dependencies = [
+    "httpx>=0.27.2",
+    "pandas>=2.2.3",
+]
 readme = "README.md"
 requires-python = ">= 3.8"
 
@@ -15,7 +18,10 @@ build-backend = "hatchling.build"
 
 [tool.rye]
 managed = true
-dev-dependencies = []
+dev-dependencies = [
+    "jupyterlab>=4.3.1",
+    "pytest>=8.3.3",
+]
 
 [tool.hatch.metadata]
 allow-direct-references = true
