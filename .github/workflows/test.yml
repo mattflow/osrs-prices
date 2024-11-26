@@ -37,3 +37,6 @@ jobs:
 
       - name: Run linting
         run: rye lint
+
+      - name: Run format check
+        run: rye fmt --check
