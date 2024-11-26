@@ -10,6 +10,8 @@
 #   universal: false
 
 -e file:.
+annotated-types==0.7.0
+    # via pydantic
 anyio==4.6.2.post1
     # via httpx
 certifi==2024.8.30
@@ -28,6 +30,10 @@ numpy==2.1.3
     # via pandas
 pandas==2.2.3
     # via osrs-prices
+pydantic==2.10.2
+    # via osrs-prices
+pydantic-core==2.27.1
+    # via pydantic
 python-dateutil==2.9.0.post0
     # via pandas
 pytz==2024.2
@@ -37,5 +43,8 @@ six==1.16.0
 sniffio==1.3.1
     # via anyio
     # via httpx
+typing-extensions==4.12.2
+    # via pydantic
+    # via pydantic-core
 tzdata==2024.2
     # via pandas

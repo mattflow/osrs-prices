@@ -1,16 +1,35 @@
 [project]
 name = "osrs-prices"
 version = "0.1.0"
-description = "Add your description here"
+description = "A Python client for the RuneScape Wiki Prices API"
 authors = [
     { name = "Matt Flowers", email = "mattmflowers28@gmail.com" }
 ]
 dependencies = [
     "httpx>=0.27.2",
     "pandas>=2.2.3",
+    "pydantic>=2.10.2",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
+license = "MIT"
+keywords = ["osrs", "runescape", "grand exchange", "prices"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.urls]
+Homepage = "https://github.com/mattflow/osrs-prices"
+Repository = "https://github.com/mattflow/osrs-prices"
+Documentation = "https://github.com/mattflow/osrs-prices#readme"
 
 [build-system]
 requires = ["hatchling"]
