@@ -1,5 +1,5 @@
-from osrs_prices import hello
+from osrs_prices import Client
 
 
-def test_hello():
-    assert hello() == "Hello from osrs-prices!"
+def test_nothing():
+    assert True
