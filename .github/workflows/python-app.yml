@@ -24,3 +24,5 @@ jobs:
         run: rye sync
       - name: Run tests
         run: rye run pytest
+      - name: Build package
+        run: rye build
