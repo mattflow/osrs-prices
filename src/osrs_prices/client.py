@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from typing import Literal
+from typing import Literal, overload
 import os
 import httpx
 import pandas as pd
@@ -18,6 +18,10 @@ class Client:
         assert response.status_code == HTTPStatus.OK
         return response.json()
 
+    @overload
+    def get_mapping(self, as_pandas: Literal[True]) -> pd.DataFrame: ...
+    @overload
+    def get_mapping(self, as_pandas: Literal[False]) -> list[dict]: ...
     def get_mapping(self, as_pandas: bool = False):
         data = self._get_request_data("mapping")
         if not as_pandas:
@@ -25,6 +29,14 @@ class Client:
         df = pd.DataFrame.from_records(data)
         return df
 
+    @overload
+    def get_latest(
+        self, as_pandas: Literal[True], mapped: bool = False
+    ) -> pd.DataFrame: ...
+    @overload
+    def get_latest(
+        self, as_pandas: Literal[False] = False, mapped: bool = False
+    ) -> list[dict]: ...
     def get_latest(self, as_pandas: bool = False, mapped: bool = False):
         data = self._get_request_data("latest")["data"]
         if not as_pandas:
