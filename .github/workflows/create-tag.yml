@@ -11,13 +11,12 @@ on:
           - minor
           - patch
 
-permissions:
-  contents: write
-
 jobs:
   create-tag:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - name: Install the latest version of rye
