@@ -171,6 +171,7 @@ packaging==24.2
 pandas==2.2.3
     # via osrs-prices
 pandas-stubs==2.2.2.240807
+    # via osrs-prices
 pandocfilters==1.5.1
     # via nbconvert
 parso==0.8.4

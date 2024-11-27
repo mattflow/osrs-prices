@@ -30,7 +30,10 @@ idna==3.10
     # via httpx
 numpy==2.0.2
     # via pandas
+    # via pandas-stubs
 pandas==2.2.3
+    # via osrs-prices
+pandas-stubs==2.2.2.240807
     # via osrs-prices
 pydantic==2.10.2
     # via osrs-prices
@@ -45,6 +48,8 @@ six==1.16.0
 sniffio==1.3.1
     # via anyio
     # via httpx
+types-pytz==2024.2.0.20241003
+    # via pandas-stubs
 typing-extensions==4.12.2
     # via anyio
     # via pydantic

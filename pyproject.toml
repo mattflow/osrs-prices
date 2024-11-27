@@ -9,6 +9,7 @@ dependencies = [
     "httpx>=0.27.2",
     "pandas>=2.2.3",
     "pydantic>=2.10.2",
+    "pandas-stubs>=2.2.2.240807",
 ]
 readme = "README.md"
 requires-python = ">= 3.9"
@@ -40,7 +41,6 @@ dev-dependencies = [
     "jupyterlab>=4.3.1",
     "pytest>=8.3.3",
     "mypy>=1.13.0",
-    "pandas-stubs>=2.2.2.240807",
 ]
 
 [tool.hatch.metadata]
