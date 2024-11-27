@@ -31,7 +31,7 @@ jobs:
         run: |
           rye version --bump ${{ inputs.bump_part }}
           version=$(rye version)
-          echo ::set-output name="version::$version"
+          echo "version=$version" >> $GITHUB_OUTPUT
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
