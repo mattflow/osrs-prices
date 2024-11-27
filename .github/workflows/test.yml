@@ -52,3 +52,6 @@ jobs:
 
       - name: Run tests
         run: rye test
+
+      - name: Run type check
+        run: rye run mypy .
