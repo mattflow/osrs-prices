@@ -12,7 +12,7 @@ on:
           - patch
 
 jobs:
-  create-tag:
+  draft-release:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
