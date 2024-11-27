@@ -35,7 +35,7 @@ jobs:
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
-          add: src/osrs_prices/__init__.py
+          add: pyproject.toml
           message: Bump version to ${{ steps.bump_version.outputs.version }}
           push: true
           tag: v${{ steps.bump_version.outputs.version }}
