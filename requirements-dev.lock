@@ -203,6 +203,8 @@ pygments==2.18.0
     # via ipython
     # via nbconvert
 pytest==8.3.3
+    # via pytest-mock
+pytest-mock==3.14.0
 python-dateutil==2.9.0.post0
     # via arrow
     # via jupyter-client

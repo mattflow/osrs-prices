@@ -8,6 +8,15 @@ from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 
 class Item(BaseModel):
+    name: str
+    icon: str
+    highalch: Optional[int] = None
+    lowalch: Optional[int] = None
+    limit: Optional[int] = None
+    value: int
+    examine: str
+    members: bool
+    id: int
     model_config = ConfigDict(extra="forbid")
 
 
@@ -27,21 +36,24 @@ Latest = Dict[str, PricePoint]
 LatestAdapter = TypeAdapter(Latest)
 
 
+def get_request_data(*, headers: dict[str, str], base_url: str, endpoint: str) -> Any:
+    with httpx.Client(headers=headers, base_url=base_url) as client:
+        response = client.get(endpoint)
+
+    assert response.status_code == HTTPStatus.OK
+    return response.json()
+
+
 class Client:
     def __init__(self, user_agent: str, game_mode: Literal["osrs", "dmm"] = "osrs"):
         self.base_url = os.path.join("https://prices.runescape.wiki/api/v1", game_mode)
         self.headers = {"User-Agent": user_agent}
 
-    def _get_request_data(self, path: str) -> Any:
-        with httpx.Client(headers=self.headers, base_url=self.base_url) as client:
-            response = client.get(path)
-
-        assert response.status_code == HTTPStatus.OK
-        return response.json()
-
     @lru_cache(maxsize=1)
     def _get_mapping_data(self) -> Any:
-        return self._get_request_data("mapping")
+        return get_request_data(
+            headers=self.headers, base_url=self.base_url, endpoint="mapping"
+        )
 
     @overload
     def get_mapping(
@@ -49,7 +61,7 @@ class Client:
     ) -> pd.DataFrame: ...
     @overload
     def get_mapping(
-        self, as_pandas: Literal[False], force_refresh: bool = False
+        self, as_pandas: Literal[False] = False, force_refresh: bool = False
     ) -> Mapping: ...
     def get_mapping(
         self, as_pandas: bool = False, force_refresh: bool = False
@@ -68,7 +80,9 @@ class Client:
         return df
 
     def _get_latest_data(self) -> Any:
-        data = self._get_request_data("latest")
+        data = get_request_data(
+            headers=self.headers, base_url=self.base_url, endpoint="latest"
+        )
         assert "data" in data
         return data["data"]
 
@@ -81,7 +95,7 @@ class Client:
         self, as_pandas: Literal[False] = False, mapped: bool = False
     ) -> Latest: ...
     def get_latest(
-        self, as_pandas: bool = False, mapped: bool = False
+        self, as_pandas: bool = False, mapped: bool = False, force_refresh: bool = False
     ) -> Union[Latest, pd.DataFrame]:
         data = self._get_latest_data()
 
@@ -93,6 +107,10 @@ class Client:
         df["id"] = df["id"].astype(int)
 
         if mapped:
-            df = df.merge(self.get_mapping(as_pandas=True), on="id", how="inner")
+            df = df.merge(
+                self.get_mapping(as_pandas=True, force_refresh=force_refresh),
+                on="id",
+                how="inner",
+            )
 
         return df
