@@ -27,21 +27,22 @@ Latest = Dict[str, PricePoint]
 LatestAdapter = TypeAdapter(Latest)
 
 
+def get_request_data(headers: dict[str, str], base_url: str, endpoint: str) -> Any:
+    with httpx.Client(headers=headers, base_url=base_url) as client:
+        response = client.get(endpoint)
+
+    assert response.status_code == HTTPStatus.OK
+    return response.json()
+
+
 class Client:
     def __init__(self, user_agent: str, game_mode: Literal["osrs", "dmm"] = "osrs"):
         self.base_url = os.path.join("https://prices.runescape.wiki/api/v1", game_mode)
         self.headers = {"User-Agent": user_agent}
 
-    def _get_request_data(self, path: str) -> Any:
-        with httpx.Client(headers=self.headers, base_url=self.base_url) as client:
-            response = client.get(path)
-
-        assert response.status_code == HTTPStatus.OK
-        return response.json()
-
     @lru_cache(maxsize=1)
     def _get_mapping_data(self) -> Any:
-        return self._get_request_data("mapping")
+        return get_request_data(self.headers, self.base_url, "mapping")
 
     @overload
     def get_mapping(
@@ -68,7 +69,7 @@ class Client:
         return df
 
     def _get_latest_data(self) -> Any:
-        data = self._get_request_data("latest")
+        data = get_request_data(self.headers, self.base_url, "latest")
         assert "data" in data
         return data["data"]
 
