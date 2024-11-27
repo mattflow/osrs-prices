@@ -1,6 +1,6 @@
 [project]
 name = "osrs-prices"
-dynamic = ["version"]
+version = "0.1.0"
 description = "A Python client for the RuneScape Wiki Prices API"
 authors = [
     { name = "Matt Flowers", email = "mattmflowers28@gmail.com" }
@@ -63,6 +63,3 @@ disallow_untyped_defs = true
 init_forbid_extra = true
 init_typed = true
 warn_required_dynamic_aliases = true
-
-[tool.hatch.version]
-path = "src/osrs_prices/__init__.py"
