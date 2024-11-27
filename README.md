@@ -54,6 +54,6 @@ latest = client.get_latest(
 latest_df = client.get_latest(
   as_pandas=True,
   mapped=True, # Optional, defaults to False. If as_pandas is False, this parameter is ignored.
-  force_refresh=False, # Optional, defaults to False. If as_pandas is False, this parameter is ignored.
+  force_refresh=False, # Optional, defaults to False. This is forwarded to the mapping function.
 )
 ```
