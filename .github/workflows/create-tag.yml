@@ -11,6 +11,9 @@ on:
           - minor
           - patch
 
+permissions:
+  contents: write
+
 jobs:
   create-tag:
     runs-on: ubuntu-latest
