@@ -8,6 +8,15 @@ from pydantic import BaseModel, ConfigDict, TypeAdapter
 
 
 class Item(BaseModel):
+    name: str
+    icon: str
+    highalch: Optional[int] = None
+    lowalch: Optional[int] = None
+    limit: Optional[int] = None
+    value: int
+    examine: str
+    members: bool
+    id: int
     model_config = ConfigDict(extra="forbid")
 
 
@@ -52,7 +61,7 @@ class Client:
     ) -> pd.DataFrame: ...
     @overload
     def get_mapping(
-        self, as_pandas: Literal[False], force_refresh: bool = False
+        self, as_pandas: Literal[False] = False, force_refresh: bool = False
     ) -> Mapping: ...
     def get_mapping(
         self, as_pandas: bool = False, force_refresh: bool = False
