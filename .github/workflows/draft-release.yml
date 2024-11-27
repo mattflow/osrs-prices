@@ -38,3 +38,9 @@ jobs:
           message: Bump version to ${{ steps.bump_version.outputs.version }}
           push: true
           tag: v${{ steps.bump_version.outputs.version }}
+      steps:
+        - uses: actions/checkout@v3
+        - uses: ncipollo/release-action@v1
+          with:
+            draft: true
+            name: v${{ steps.bump_version.outputs.version }}
