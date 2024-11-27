@@ -37,7 +37,5 @@ jobs:
         with:
           add: src/osrs_prices/__init__.py
           message: Bump version to ${{ steps.bump_version.outputs.version }}
-      - name: Create tag
-        run: |
-          git tag v${{ steps.bump_version.outputs.version }}
-          git push origin v${{ steps.bump_version.outputs.version }}
+          push: true
+          tag: v${{ steps.bump_version.outputs.version }}
