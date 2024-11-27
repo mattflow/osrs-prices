@@ -27,7 +27,7 @@ Latest = Dict[str, PricePoint]
 LatestAdapter = TypeAdapter(Latest)
 
 
-def get_request_data(headers: dict[str, str], base_url: str, endpoint: str) -> Any:
+def get_request_data(*, headers: dict[str, str], base_url: str, endpoint: str) -> Any:
     with httpx.Client(headers=headers, base_url=base_url) as client:
         response = client.get(endpoint)
 
@@ -42,7 +42,9 @@ class Client:
 
     @lru_cache(maxsize=1)
     def _get_mapping_data(self) -> Any:
-        return get_request_data(self.headers, self.base_url, "mapping")
+        return get_request_data(
+            headers=self.headers, base_url=self.base_url, endpoint="mapping"
+        )
 
     @overload
     def get_mapping(
@@ -69,7 +71,9 @@ class Client:
         return df
 
     def _get_latest_data(self) -> Any:
-        data = get_request_data(self.headers, self.base_url, "latest")
+        data = get_request_data(
+            headers=self.headers, base_url=self.base_url, endpoint="latest"
+        )
         assert "data" in data
         return data["data"]
 
@@ -82,7 +86,7 @@ class Client:
         self, as_pandas: Literal[False] = False, mapped: bool = False
     ) -> Latest: ...
     def get_latest(
-        self, as_pandas: bool = False, mapped: bool = False
+        self, as_pandas: bool = False, mapped: bool = False, force_refresh: bool = False
     ) -> Union[Latest, pd.DataFrame]:
         data = self._get_latest_data()
 
@@ -94,6 +98,10 @@ class Client:
         df["id"] = df["id"].astype(int)
 
         if mapped:
-            df = df.merge(self.get_mapping(as_pandas=True), on="id", how="inner")
+            df = df.merge(
+                self.get_mapping(as_pandas=True, force_refresh=force_refresh),
+                on="id",
+                how="inner",
+            )
 
         return df
