@@ -29,9 +29,8 @@ LatestAdapter = TypeAdapter(Latest)
 
 class Client:
     def __init__(self, user_agent: str, game_mode: Literal["osrs", "dmm"] = "osrs"):
-        self.user_agent = user_agent
         self.base_url = os.path.join("https://prices.runescape.wiki/api/v1", game_mode)
-        self.headers = {"User-Agent": self.user_agent}
+        self.headers = {"User-Agent": user_agent}
 
     def _get_request_data(self, path: str) -> Any:
         with httpx.Client(headers=self.headers, base_url=self.base_url) as client:
