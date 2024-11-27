@@ -31,14 +31,19 @@ jobs:
           rye version --bump ${{ inputs.bump_part }}
           version=$(rye version)
           echo "version=$version" >> $GITHUB_OUTPUT
+      - name: Create tag name
+        id: create_tag_name
+        run: |
+          echo "tag_name=v${{ steps.bump_version.outputs.version }}" >> $GITHUB_OUTPUT
       - name: Commit changes
         uses: EndBug/add-and-commit@v9
         with:
           add: pyproject.toml
-          message: Bump version to ${{ steps.bump_version.outputs.version }}
+          message: Bump version to ${{ steps.create_tag_name.outputs.tag_name }}
           push: true
-          tag: v${{ steps.bump_version.outputs.version }}
+          tag: ${{ steps.create_tag_name.outputs.tag_name }}
       - uses: ncipollo/release-action@v1
         with:
           draft: true
-          name: v${{ steps.bump_version.outputs.version }}
+          name: ${{ steps.create_tag_name.outputs.tag_name }}
+          tag: ${{ steps.create_tag_name.outputs.tag_name }}
