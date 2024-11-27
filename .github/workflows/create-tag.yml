@@ -1,0 +1,39 @@
+name: Create tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump_part:
+        type: choice
+        default: patch
+        options:
+          - major
+          - minor
+          - patch
+
+jobs:
+  draft-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install the latest version of rye
+        uses: eifinger/setup-rye@v4
+        with:
+          enable-cache: true
+      - name: Rye sync
+        run: rye sync
+      - name: Bump version
+        id: bump_version
+        run: |
+          rye version --bump ${{ inputs.bump_part }}
+          version=$(rye version)
+          echo ::set-output name="version::$version"
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: src/osrs_prices/__init__.py
+          message: Bump version to ${{ steps.bump_version.outputs.version }}
+      - name: Create tag
+        run: |
+          git tag v${{ steps.bump_version.outputs.version }}
+          git push origin v${{ steps.bump_version.outputs.version }}
