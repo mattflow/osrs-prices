@@ -1,6 +1,6 @@
 [project]
 name = "osrs-prices"
-version = "1.0.0"
+version = "1.1.0"
 description = "Python client for the OSRS Real-time Prices API"
 readme = "README.md"
 license = "MIT"
