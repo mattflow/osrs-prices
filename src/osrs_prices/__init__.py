@@ -5,6 +5,11 @@ from osrs_prices.exceptions import APIError, OSRSPricesError, RateLimitError, Va
 from osrs_prices.models import (
     AveragePrice,
     AverageResponse,
+    EnrichedAveragePrice,
+    EnrichedAverageResponse,
+    EnrichedLatestPrice,
+    EnrichedLatestResponse,
+    EnrichedTimeseriesResponse,
     ItemMapping,
     LatestPrice,
     LatestResponse,
@@ -25,6 +30,11 @@ __all__ = [
     # Models
     "AveragePrice",
     "AverageResponse",
+    "EnrichedAveragePrice",
+    "EnrichedAverageResponse",
+    "EnrichedLatestPrice",
+    "EnrichedLatestResponse",
+    "EnrichedTimeseriesResponse",
     "ItemMapping",
     "LatestPrice",
     "LatestResponse",

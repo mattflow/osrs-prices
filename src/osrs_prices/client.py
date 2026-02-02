@@ -1,5 +1,7 @@
 """Main OSRS Prices API client."""
 
+from typing import overload
+
 from types import TracebackType
 
 import httpx
@@ -10,6 +12,13 @@ from osrs_prices.endpoints.latest import LatestEndpoint
 from osrs_prices.endpoints.mapping import MappingEndpoint
 from osrs_prices.endpoints.timeseries import TimeseriesEndpoint
 from osrs_prices.exceptions import ValidationError
+from osrs_prices.models.enriched import (
+    EnrichedAveragePrice,
+    EnrichedAverageResponse,
+    EnrichedLatestPrice,
+    EnrichedLatestResponse,
+    EnrichedTimeseriesResponse,
+)
 from osrs_prices.models.items import ItemMapping, MappingResponse
 from osrs_prices.models.prices import AverageResponse, LatestResponse
 from osrs_prices.models.timeseries import Timestep, TimeseriesResponse
@@ -183,3 +192,190 @@ class Client:
             if item.id == item_id:
                 return item
         return None
+
+    def _build_mapping_lookup(self) -> dict[int, ItemMapping]:
+        """Build a lookup dictionary from item ID to ItemMapping.
+
+        Returns:
+            Dictionary mapping item IDs to their ItemMapping objects.
+        """
+        mapping = self.get_mapping()
+        return {item.id: item for item in mapping.items}
+
+    def get_latest_with_mapping(
+        self, item_id: int | None = None
+    ) -> EnrichedLatestResponse:
+        """Get latest prices enriched with item metadata.
+
+        Args:
+            item_id: Optional item ID to filter to a single item.
+
+        Returns:
+            Latest prices combined with item mapping data.
+
+        Example:
+            >>> with Client(user_agent="my-app/1.0") as client:
+            ...     enriched = client.get_latest_with_mapping()
+            ...     for item in enriched.items:
+            ...         print(f"{item.name}: {item.high} gp")
+        """
+        latest = self.get_latest(item_id)
+        return self._enrich_latest_response(latest)
+
+    def get_5m_average_with_mapping(
+        self, timestamp: int | None = None
+    ) -> EnrichedAverageResponse:
+        """Get 5-minute average prices enriched with item metadata.
+
+        Args:
+            timestamp: Optional Unix timestamp to get historical data.
+
+        Returns:
+            5-minute average prices combined with item mapping data.
+        """
+        averages = self.get_5m_average(timestamp)
+        return self._enrich_average_response(averages)
+
+    def get_1h_average_with_mapping(
+        self, timestamp: int | None = None
+    ) -> EnrichedAverageResponse:
+        """Get 1-hour average prices enriched with item metadata.
+
+        Args:
+            timestamp: Optional Unix timestamp to get historical data.
+
+        Returns:
+            1-hour average prices combined with item mapping data.
+        """
+        averages = self.get_1h_average(timestamp)
+        return self._enrich_average_response(averages)
+
+    def _enrich_latest_response(
+        self, latest: LatestResponse
+    ) -> EnrichedLatestResponse:
+        """Enrich a LatestResponse with item metadata.
+
+        Args:
+            latest: The latest response to enrich.
+
+        Returns:
+            Enriched latest response with item metadata.
+        """
+        lookup = self._build_mapping_lookup()
+
+        items = []
+        for item_id, price in latest.data.items():
+            mapping_item = lookup.get(item_id)
+            if mapping_item is not None:
+                items.append(
+                    EnrichedLatestPrice(
+                        id=mapping_item.id,
+                        name=mapping_item.name,
+                        examine=mapping_item.examine,
+                        members=mapping_item.members,
+                        lowalch=mapping_item.lowalch,
+                        highalch=mapping_item.highalch,
+                        limit=mapping_item.limit,
+                        value=mapping_item.value,
+                        icon=mapping_item.icon,
+                        high=price.high,
+                        high_time=price.high_time,
+                        low=price.low,
+                        low_time=price.low_time,
+                    )
+                )
+
+        return EnrichedLatestResponse(items=items)
+
+    def _enrich_average_response(
+        self, averages: AverageResponse
+    ) -> EnrichedAverageResponse:
+        """Enrich an AverageResponse with item metadata.
+
+        Args:
+            averages: The average response to enrich.
+
+        Returns:
+            Enriched average response with item metadata.
+        """
+        lookup = self._build_mapping_lookup()
+
+        items = []
+        for item_id, price in averages.data.items():
+            mapping_item = lookup.get(item_id)
+            if mapping_item is not None:
+                items.append(
+                    EnrichedAveragePrice(
+                        id=mapping_item.id,
+                        name=mapping_item.name,
+                        examine=mapping_item.examine,
+                        members=mapping_item.members,
+                        lowalch=mapping_item.lowalch,
+                        highalch=mapping_item.highalch,
+                        limit=mapping_item.limit,
+                        value=mapping_item.value,
+                        icon=mapping_item.icon,
+                        avg_high_price=price.avg_high_price,
+                        high_price_volume=price.high_price_volume,
+                        avg_low_price=price.avg_low_price,
+                        low_price_volume=price.low_price_volume,
+                    )
+                )
+
+        return EnrichedAverageResponse(items=items, timestamp=averages.timestamp)
+
+    def get_timeseries_with_mapping(
+        self, item_id: int, timestep: Timestep
+    ) -> EnrichedTimeseriesResponse:
+        """Get timeseries data with item metadata attached.
+
+        Args:
+            item_id: The item ID to fetch data for.
+            timestep: The time interval for data points ("5m", "1h", "6h", or "24h").
+
+        Returns:
+            Timeseries data with the item's metadata.
+
+        Raises:
+            ValidationError: If the item_id is not found in the mapping.
+        """
+        timeseries = self.get_timeseries(item_id, timestep)
+        lookup = self._build_mapping_lookup()
+
+        mapping_item = lookup.get(item_id)
+        if mapping_item is None:
+            raise ValidationError(f"Item ID {item_id} not found in mapping")
+
+        return EnrichedTimeseriesResponse(item=mapping_item, data=timeseries.data)
+
+    @overload
+    def enrich(self, response: LatestResponse) -> EnrichedLatestResponse: ...
+
+    @overload
+    def enrich(self, response: AverageResponse) -> EnrichedAverageResponse: ...
+
+    def enrich(
+        self, response: LatestResponse | AverageResponse
+    ) -> EnrichedLatestResponse | EnrichedAverageResponse:
+        """Enrich an existing response with item metadata.
+
+        This is a convenience method for users who already have a response
+        and want to add item metadata to it.
+
+        Args:
+            response: A LatestResponse or AverageResponse to enrich.
+
+        Returns:
+            The enriched response with item metadata added.
+
+        Example:
+            >>> with Client(user_agent="my-app/1.0") as client:
+            ...     latest = client.get_latest()
+            ...     enriched = client.enrich(latest)
+            ...     for item in enriched.items:
+            ...         print(f"{item.name}: {item.high} gp")
+        """
+        if isinstance(response, LatestResponse):
+            return self._enrich_latest_response(response)
+        else:
+            return self._enrich_average_response(response)
