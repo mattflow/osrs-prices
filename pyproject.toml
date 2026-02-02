@@ -1,12 +1,26 @@
 [project]
 name = "osrs-prices"
-version = "0.1.0"
+version = "0.1.2"
 description = "Python client for the OSRS Real-time Prices API"
 readme = "README.md"
+license = "MIT"
 authors = [
     { name = "Matt Flowers", email = "mattmflowers28@gmail.com" }
 ]
-requires-python = ">=3.12"
+keywords = ["osrs", "oldschool-runescape", "runescape", "api", "prices", "grand-exchange"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Typing :: Typed",
+]
+requires-python = ">=3.10"
 dependencies = [
     "httpx>=0.27.0",
     "pydantic>=2.5.0",
@@ -14,6 +28,13 @@ dependencies = [
 
 [project.optional-dependencies]
 pandas = ["pandas>=2.0.0"]
+
+[project.urls]
+Homepage = "https://github.com/mattflow/osrs-prices"
+Repository = "https://github.com/mattflow/osrs-prices"
+Documentation = "https://github.com/mattflow/osrs-prices#readme"
+Changelog = "https://github.com/mattflow/osrs-prices/blob/main/CHANGELOG.md"
+Issues = "https://github.com/mattflow/osrs-prices/issues"
 
 [dependency-groups]
 dev = [
@@ -31,10 +52,10 @@ build-backend = "uv_build"
 
 [tool.mypy]
 strict = true
-python_version = "3.12"
+python_version = "3.10"
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py310"
 line-length = 100
 
 [tool.pytest.ini_options]

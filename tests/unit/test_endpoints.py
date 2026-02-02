@@ -1,6 +1,6 @@
 """Unit tests for endpoint classes."""
 
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import httpx
 import pytest
