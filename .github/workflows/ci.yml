@@ -24,10 +24,14 @@ jobs:
         run: uv python install ${{ matrix.python-version }}
 
       - name: Install dependencies
-        run: uv sync --all-extras --python ${{ matrix.python-version }}
+        run: uv sync --all-extras
+        env:
+          UV_PYTHON: ${{ matrix.python-version }}
 
       - name: Run tests
         run: uv run pytest tests/unit --cov=src/osrs_prices --cov-report=term-missing
+        env:
+          UV_PYTHON: ${{ matrix.python-version }}
 
   typecheck:
     runs-on: ubuntu-latest
