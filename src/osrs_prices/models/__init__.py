@@ -1,5 +1,12 @@
 """Pydantic models for the OSRS Prices API."""
 
+from osrs_prices.models.enriched import (
+    EnrichedAveragePrice,
+    EnrichedAverageResponse,
+    EnrichedLatestPrice,
+    EnrichedLatestResponse,
+    EnrichedTimeseriesResponse,
+)
 from osrs_prices.models.items import ItemMapping, MappingResponse
 from osrs_prices.models.prices import (
     AveragePrice,
@@ -16,6 +23,11 @@ from osrs_prices.models.timeseries import (
 __all__ = [
     "AveragePrice",
     "AverageResponse",
+    "EnrichedAveragePrice",
+    "EnrichedAverageResponse",
+    "EnrichedLatestPrice",
+    "EnrichedLatestResponse",
+    "EnrichedTimeseriesResponse",
     "ItemMapping",
     "LatestPrice",
     "LatestResponse",

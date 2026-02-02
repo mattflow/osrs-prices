@@ -25,3 +25,17 @@ Pydantic models for API responses.
 ::: osrs_prices.TimeseriesResponse
 
 ::: osrs_prices.Timestep
+
+## Enriched Models
+
+These models combine price data with item metadata for convenience.
+
+::: osrs_prices.EnrichedLatestPrice
+
+::: osrs_prices.EnrichedLatestResponse
+
+::: osrs_prices.EnrichedAveragePrice
+
+::: osrs_prices.EnrichedAverageResponse
+
+::: osrs_prices.EnrichedTimeseriesResponse

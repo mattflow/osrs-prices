@@ -33,6 +33,24 @@ with Client(user_agent="my-app/1.0 contact@example.com") as client:
     timeseries = client.get_timeseries(item_id=4151, timestep="1h")
 ```
 
+## Enriched Responses
+
+Combine price data with item metadata in a single call:
+
+```python
+from osrs_prices import Client
+
+with Client(user_agent="my-app/1.0") as client:
+    # Get prices with item names, limits, alch values, etc.
+    enriched = client.get_latest_with_mapping()
+    for item in enriched.items:
+        print(f"{item.name}: {item.high} gp (limit: {item.limit})")
+
+    # Or enrich an existing response
+    latest = client.get_latest()
+    enriched = client.enrich(latest)
+```
+
 ## DataFrame Support
 
 Convert any response to a pandas DataFrame (requires `pip install osrs-prices[pandas]`):
@@ -59,6 +77,11 @@ with Client(user_agent="my-app/1.0") as client:
 | `get_1h_average(timestamp=None)` | 1-hour price averages |
 | `get_timeseries(item_id, timestep)` | Historical data (timestep: "5m", "1h", "6h", "24h") |
 | `get_item_by_name(name)` | Find item by exact name |
+| `get_latest_with_mapping(item_id=None)` | Latest prices with item metadata |
+| `get_5m_average_with_mapping(timestamp=None)` | 5-minute averages with item metadata |
+| `get_1h_average_with_mapping(timestamp=None)` | 1-hour averages with item metadata |
+| `get_timeseries_with_mapping(item_id, timestep)` | Timeseries with item metadata |
+| `enrich(response)` | Add item metadata to an existing response |
 
 ### Models
 
@@ -66,6 +89,9 @@ with Client(user_agent="my-app/1.0") as client:
 - `AveragePrice` - Average prices with volumes
 - `ItemMapping` - Item metadata (name, examine, alch values, etc.)
 - `TimeseriesDataPoint` - Historical price point
+- `EnrichedLatestPrice` - Latest price combined with item metadata
+- `EnrichedAveragePrice` - Average price combined with item metadata
+- `EnrichedTimeseriesResponse` - Timeseries with item metadata attached
 
 ### Exceptions
 

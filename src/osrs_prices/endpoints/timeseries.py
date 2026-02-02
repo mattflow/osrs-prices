@@ -11,9 +11,14 @@ class TimeseriesEndpoint(BaseEndpoint[TimeseriesResponse]):
 
     path = "/timeseries"
 
+    def __init__(self, http_client: Any) -> None:
+        """Initialize the endpoint."""
+        super().__init__(http_client)
+        self._current_item_id: int | None = None
+
     def _parse_response(self, data: Any) -> TimeseriesResponse:
         """Parse the API response into a TimeseriesResponse."""
-        return TimeseriesResponse.from_api(data)
+        return TimeseriesResponse.from_api(data, item_id=self._current_item_id)
 
     def fetch(self, item_id: int, timestep: Timestep) -> TimeseriesResponse:
         """Fetch historical timeseries data for an item.
@@ -25,5 +30,6 @@ class TimeseriesEndpoint(BaseEndpoint[TimeseriesResponse]):
         Returns:
             The timeseries data.
         """
+        self._current_item_id = item_id
         params = {"id": str(item_id), "timestep": timestep}
         return self._request(params)
