@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.1](https://github.com/mattflow/osrs-prices/compare/v1.0.0...v1.0.1) (2026-02-02)
+
+
+### Documentation
+
+* add commit convention to CLAUDE.md and fix README dev instructions ([f635042](https://github.com/mattflow/osrs-prices/commit/f635042ea44da1bbf2d8e7331a9f641442688cf9))
+
 ## [1.0.0](https://github.com/mattflow/osrs-prices/compare/v0.1.2...v1.0.0) (2026-02-02)
 
 
