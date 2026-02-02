@@ -7,11 +7,6 @@ on:
     branches: [main]
   release:
     types: [published]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version to deploy (e.g., 1.0.0)'
-        required: true
 
 permissions:
   contents: write
@@ -37,7 +32,7 @@ jobs:
         run: uv run mkdocs build --strict
 
   deploy:
-    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'release'
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -59,14 +54,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Get version
+      - name: Get version from tag
         id: version
-        run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
-          else
-            echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-          fi
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
 
       - name: Deploy docs with mike
         run: |
