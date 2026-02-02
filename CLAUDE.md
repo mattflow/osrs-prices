@@ -67,3 +67,32 @@ tests/
 3. Add method to `Client` class
 4. Export new models from `models/__init__.py` and `__init__.py`
 5. Add tests in `tests/unit/` and `tests/integration/`
+
+## Commit Convention
+
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) with automated releases via release-please.
+
+**Format:** `<type>(<scope>): <description>`
+
+**Types:**
+- `feat:` - New feature (triggers minor version bump)
+- `fix:` - Bug fix (triggers patch version bump)
+- `feat!:` or `fix!:` - Breaking change (triggers major version bump)
+- `docs:` - Documentation only
+- `test:` - Tests only
+- `refactor:` - Code refactoring
+- `perf:` - Performance improvement
+- `chore:` - Maintenance tasks
+- `ci:` - CI/CD changes
+
+**Examples:**
+```bash
+git commit -m "feat: add support for /timeseries endpoint"
+git commit -m "fix: handle rate limit response correctly"
+git commit -m "feat!: rename Client.get_prices to Client.get_latest"
+```
+
+**Release workflow:**
+1. Merge PRs with conventional commit messages to main
+2. release-please automatically creates a Release PR
+3. Merge the Release PR to publish to PyPI

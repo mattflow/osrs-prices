@@ -86,7 +86,7 @@ my-app/1.0 contact@example.com
 
 ```bash
 # Install dependencies
-uv sync
+uv sync --all-extras
 
 # Run tests
 uv run pytest
