@@ -11,8 +11,10 @@ from osrs_prices import (
     EnrichedLatestPrice,
     EnrichedLatestResponse,
     EnrichedTimeseriesResponse,
+    TimeseriesResponse,
     ValidationError,
 )
+from osrs_prices.models.timeseries import TimeseriesDataPoint
 
 
 class TestEnrichedModels:
@@ -390,5 +392,91 @@ class TestClientEnrichedMethods:
             # Second call should use cache
             mock_client.get_latest_with_mapping()
             assert len(mapping_calls) == 1
+
+        mock_client.close()
+
+    def test_enrich_timeseries_response(
+        self,
+        mock_client: Client,
+        sample_timeseries_response: dict,
+        sample_mapping_response: list[dict],
+    ) -> None:
+        """Test enrich method with TimeseriesResponse."""
+        mock_ts_resp = MagicMock()
+        mock_ts_resp.status_code = 200
+        mock_ts_resp.json.return_value = sample_timeseries_response
+
+        mock_mapping_resp = MagicMock()
+        mock_mapping_resp.status_code = 200
+        mock_mapping_resp.json.return_value = sample_mapping_response
+
+        def mock_get(url: str, **kwargs) -> MagicMock:
+            if "/mapping" in url:
+                return mock_mapping_resp
+            return mock_ts_resp
+
+        with patch.object(mock_client._http_client, "get", side_effect=mock_get):
+            timeseries = mock_client.get_timeseries(item_id=4151, timestep="1h")
+            enriched = mock_client.enrich(timeseries)
+
+            assert isinstance(enriched, EnrichedTimeseriesResponse)
+            assert enriched.item.id == 4151
+            assert enriched.item.name == "Abyssal whip"
+            assert len(enriched.data) == 3
+
+        mock_client.close()
+
+    def test_enrich_timeseries_without_item_id(
+        self,
+        mock_client: Client,
+        sample_mapping_response: list[dict],
+    ) -> None:
+        """Test enrich raises for TimeseriesResponse without item_id."""
+        mock_mapping_resp = MagicMock()
+        mock_mapping_resp.status_code = 200
+        mock_mapping_resp.json.return_value = sample_mapping_response
+
+        # Create a TimeseriesResponse without item_id
+        timeseries = TimeseriesResponse(
+            data=[
+                TimeseriesDataPoint(
+                    timestamp=1704067200,
+                    avg_high_price=1500000,
+                    avg_low_price=1480000,
+                )
+            ]
+        )
+
+        with patch.object(mock_client._http_client, "get", return_value=mock_mapping_resp):
+            with pytest.raises(ValidationError, match="without item_id"):
+                mock_client.enrich(timeseries)
+
+        mock_client.close()
+
+    def test_enrich_timeseries_unknown_item(
+        self,
+        mock_client: Client,
+        sample_mapping_response: list[dict],
+    ) -> None:
+        """Test enrich raises for TimeseriesResponse with unknown item_id."""
+        mock_mapping_resp = MagicMock()
+        mock_mapping_resp.status_code = 200
+        mock_mapping_resp.json.return_value = sample_mapping_response
+
+        # Create a TimeseriesResponse with unknown item_id
+        timeseries = TimeseriesResponse(
+            item_id=99999,
+            data=[
+                TimeseriesDataPoint(
+                    timestamp=1704067200,
+                    avg_high_price=1500000,
+                    avg_low_price=1480000,
+                )
+            ]
+        )
+
+        with patch.object(mock_client._http_client, "get", return_value=mock_mapping_resp):
+            with pytest.raises(ValidationError, match="not found in mapping"):
+                mock_client.enrich(timeseries)
 
         mock_client.close()

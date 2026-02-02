@@ -5,10 +5,9 @@ from osrs_prices.models.items import ItemMapping
 from osrs_prices.models.timeseries import TimeseriesDataPoint
 
 
-class EnrichedLatestPrice(OSRSBaseModel):
-    """Latest price combined with item metadata."""
+class EnrichedItemBase(OSRSBaseModel):
+    """Base class with common item metadata fields."""
 
-    # From ItemMapping
     id: int
     name: str
     examine: str | None = None
@@ -18,7 +17,11 @@ class EnrichedLatestPrice(OSRSBaseModel):
     limit: int | None = None
     value: int | None = None
     icon: str
-    # From LatestPrice
+
+
+class EnrichedLatestPrice(EnrichedItemBase):
+    """Latest price combined with item metadata."""
+
     high: int | None = None
     high_time: int | None = None
     low: int | None = None
@@ -31,20 +34,9 @@ class EnrichedLatestResponse(OSRSBaseModel):
     items: list[EnrichedLatestPrice]
 
 
-class EnrichedAveragePrice(OSRSBaseModel):
+class EnrichedAveragePrice(EnrichedItemBase):
     """Average price combined with item metadata."""
 
-    # From ItemMapping
-    id: int
-    name: str
-    examine: str | None = None
-    members: bool
-    lowalch: int | None = None
-    highalch: int | None = None
-    limit: int | None = None
-    value: int | None = None
-    icon: str
-    # From AveragePrice
     avg_high_price: int | None = None
     high_price_volume: int | None = None
     avg_low_price: int | None = None

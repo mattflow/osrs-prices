@@ -1,8 +1,7 @@
 """Main OSRS Prices API client."""
 
-from typing import overload
-
 from types import TracebackType
+from typing import overload
 
 import httpx
 
@@ -67,6 +66,7 @@ class Client:
         self._timeseries = TimeseriesEndpoint(self._http_client)
 
         self._name_to_id_cache: dict[str, int] | None = None
+        self._mapping_lookup_cache: dict[int, ItemMapping] | None = None
 
     def _validate_user_agent(self, user_agent: str) -> None:
         """Validate that the user agent is acceptable.
@@ -169,6 +169,7 @@ class Client:
         """Manually invalidate the mapping cache."""
         self._mapping.invalidate_cache()
         self._name_to_id_cache = None
+        self._mapping_lookup_cache = None
 
     def get_item_by_name(self, name: str) -> ItemMapping | None:
         """Find an item by its exact name.
@@ -193,14 +194,16 @@ class Client:
                 return item
         return None
 
-    def _build_mapping_lookup(self) -> dict[int, ItemMapping]:
-        """Build a lookup dictionary from item ID to ItemMapping.
+    def _get_mapping_lookup(self) -> dict[int, ItemMapping]:
+        """Get the cached lookup dictionary from item ID to ItemMapping.
 
         Returns:
             Dictionary mapping item IDs to their ItemMapping objects.
         """
-        mapping = self.get_mapping()
-        return {item.id: item for item in mapping.items}
+        if self._mapping_lookup_cache is None:
+            mapping = self.get_mapping()
+            self._mapping_lookup_cache = {item.id: item for item in mapping.items}
+        return self._mapping_lookup_cache
 
     def get_latest_with_mapping(
         self, item_id: int | None = None
@@ -261,7 +264,7 @@ class Client:
         Returns:
             Enriched latest response with item metadata.
         """
-        lookup = self._build_mapping_lookup()
+        lookup = self._get_mapping_lookup()
 
         items = []
         for item_id, price in latest.data.items():
@@ -298,7 +301,7 @@ class Client:
         Returns:
             Enriched average response with item metadata.
         """
-        lookup = self._build_mapping_lookup()
+        lookup = self._get_mapping_lookup()
 
         items = []
         for item_id, price in averages.data.items():
@@ -340,7 +343,7 @@ class Client:
             ValidationError: If the item_id is not found in the mapping.
         """
         timeseries = self.get_timeseries(item_id, timestep)
-        lookup = self._build_mapping_lookup()
+        lookup = self._get_mapping_lookup()
 
         mapping_item = lookup.get(item_id)
         if mapping_item is None:
@@ -354,19 +357,25 @@ class Client:
     @overload
     def enrich(self, response: AverageResponse) -> EnrichedAverageResponse: ...
 
+    @overload
+    def enrich(self, response: TimeseriesResponse) -> EnrichedTimeseriesResponse: ...
+
     def enrich(
-        self, response: LatestResponse | AverageResponse
-    ) -> EnrichedLatestResponse | EnrichedAverageResponse:
+        self, response: LatestResponse | AverageResponse | TimeseriesResponse
+    ) -> EnrichedLatestResponse | EnrichedAverageResponse | EnrichedTimeseriesResponse:
         """Enrich an existing response with item metadata.
 
         This is a convenience method for users who already have a response
         and want to add item metadata to it.
 
         Args:
-            response: A LatestResponse or AverageResponse to enrich.
+            response: A LatestResponse, AverageResponse, or TimeseriesResponse to enrich.
 
         Returns:
             The enriched response with item metadata added.
+
+        Raises:
+            ValidationError: If enriching a TimeseriesResponse without an item_id.
 
         Example:
             >>> with Client(user_agent="my-app/1.0") as client:
@@ -377,5 +386,37 @@ class Client:
         """
         if isinstance(response, LatestResponse):
             return self._enrich_latest_response(response)
-        else:
+        elif isinstance(response, AverageResponse):
             return self._enrich_average_response(response)
+        else:
+            return self._enrich_timeseries_response(response)
+
+    def _enrich_timeseries_response(
+        self, timeseries: TimeseriesResponse
+    ) -> EnrichedTimeseriesResponse:
+        """Enrich a TimeseriesResponse with item metadata.
+
+        Args:
+            timeseries: The timeseries response to enrich.
+
+        Returns:
+            Enriched timeseries response with item metadata.
+
+        Raises:
+            ValidationError: If the timeseries has no item_id or item not found.
+        """
+        if timeseries.item_id is None:
+            raise ValidationError(
+                "Cannot enrich TimeseriesResponse without item_id. "
+                "Use get_timeseries_with_mapping() or ensure item_id is set."
+            )
+
+        lookup = self._get_mapping_lookup()
+        mapping_item = lookup.get(timeseries.item_id)
+
+        if mapping_item is None:
+            raise ValidationError(
+                f"Item ID {timeseries.item_id} not found in mapping"
+            )
+
+        return EnrichedTimeseriesResponse(item=mapping_item, data=timeseries.data)
