@@ -46,6 +46,8 @@ plugins:
             separate_signature: true
             show_labels: true
             heading_level: 2
+            filters:
+              - "!^_"
             extensions:
               - griffe_pydantic:
                   schema: true
