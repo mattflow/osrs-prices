@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.1](https://github.com/mattflow/osrs-prices/compare/v1.0.0...v1.0.1) (2026-02-02)
+
+
+### Bug Fixes
+
+* set default version for docs root redirect ([51df5a3](https://github.com/mattflow/osrs-prices/commit/51df5a37b27ee36244471d0add45dd30d2752057))
+* set default version for docs root redirect ([3e56500](https://github.com/mattflow/osrs-prices/commit/3e56500f2cdcb1f53e65cfea7e016da89a0f0d86))
+
 ## [1.0.0](https://github.com/mattflow/osrs-prices/compare/v0.1.2...v1.0.0) (2026-02-02)
 
 
