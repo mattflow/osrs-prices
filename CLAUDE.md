@@ -23,6 +23,10 @@ uv run pytest -m integration
 
 # Type checking
 uv run mypy src/
+
+# Documentation
+uv run mkdocs serve   # Local dev server at http://127.0.0.1:8000
+uv run mkdocs build   # Build docs to site/ directory
 ```
 
 ## Structure

@@ -32,7 +32,7 @@ pandas = ["pandas>=2.0.0"]
 [project.urls]
 Homepage = "https://github.com/mattflow/osrs-prices"
 Repository = "https://github.com/mattflow/osrs-prices"
-Documentation = "https://github.com/mattflow/osrs-prices#readme"
+Documentation = "https://mattflow.github.io/osrs-prices/"
 Changelog = "https://github.com/mattflow/osrs-prices/blob/main/CHANGELOG.md"
 Issues = "https://github.com/mattflow/osrs-prices/issues"
 
@@ -44,6 +44,10 @@ dev = [
     "ruff>=0.2.0",
     "mypy>=1.8.0",
     "pandas-stubs>=2.0.0",
+    "mkdocs>=1.6.0",
+    "mkdocs-material>=9.5.0",
+    "mkdocstrings[python]>=0.24.0",
+    "mike>=2.1.0",
 ]
 
 [build-system]
