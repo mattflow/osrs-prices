@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://mattflow.github.io/osrs-prices/1.1.0/</loc>
+         <lastmod>2026-02-02</lastmod>
+    </url>
+    <url>
+         <loc>https://mattflow.github.io/osrs-prices/1.1.0/api/client/</loc>
+         <lastmod>2026-02-02</lastmod>
+    </url>
+    <url>
+         <loc>https://mattflow.github.io/osrs-prices/1.1.0/api/exceptions/</loc>
+         <lastmod>2026-02-02</lastmod>
+    </url>
+    <url>
+         <loc>https://mattflow.github.io/osrs-prices/1.1.0/api/models/</loc>
+         <lastmod>2026-02-02</lastmod>
+    </url>
+</urlset>
